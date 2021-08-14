@@ -10,16 +10,13 @@ func MigrateCreateCartItems(schema *rel.Schema) {
 			cart_id int,
 			product_id int,
 			quantity int not null,
-			weight int not null,
-			price int not null,
 			purchased boolean,
 			created_at timestamp not null,
 			updated_at timestamp not null,
 			check (
-				quantity >= 0
-				AND price >= 0
-				AND weight >= 0
+				quantity >= 1
 			),
+			UNIQUE (cart_id, product_id),
 			CONSTRAINT fk_cart FOREIGN KEY(cart_id) REFERENCES carts(id),
 			CONSTRAINT fk_product FOREIGN KEY(product_id) REFERENCES products(id)
 		)`),

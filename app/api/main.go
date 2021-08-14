@@ -14,6 +14,8 @@ import (
 	"github.com/subosito/gotenv"
 	"go.uber.org/zap"
 
+	cartRepository "github.com/ahsanulks/waitress/carts/repository"
+	cartUsecase "github.com/ahsanulks/waitress/carts/usecase"
 	productRepository "github.com/ahsanulks/waitress/products/repository"
 	productUsecase "github.com/ahsanulks/waitress/products/usecase"
 )
@@ -30,14 +32,19 @@ func main() {
 	repo, dbConnection := initDatabase(logger)
 	defer dbConnection.Close()
 
-	// load healthz related
+	// load relate healthz
 	healthzHandler := handler.NewHealthz()
 	healthzHandler.AddCheck("postgresql", repo)
 
-	// load product domain related
+	// load relate product domain
 	productRepo := productRepository.NewProductRepository(repo)
 	productUsecase := productUsecase.NewProductUsecase(productRepo)
 	productHandler := handler.NewProductHandler(productUsecase)
+
+	// load relate cart domain
+	cartRepo := cartRepository.NewCartRepository(repo)
+	cartUsecase := cartUsecase.NewCartUsecase(cartRepo)
+	cartHandler := handler.NewCartHandler(cartUsecase)
 
 	r := gin.New()
 	r.Use(ginzap.Ginzap(zapLog, time.RFC3339, true))
@@ -49,6 +56,7 @@ func main() {
 	// mount all endpoint from handler
 	healthzHandler.Mount(r.Group("/healthz"))
 	productHandler.Mount(r.Group("/products"))
+	cartHandler.Mount(r.Group("/carts"))
 
 	server := http.Server{
 		Addr:    ":" + os.Getenv("PORT"),

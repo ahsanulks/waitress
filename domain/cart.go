@@ -11,13 +11,18 @@ type Cart struct {
 }
 
 type CartItem struct {
-	ID         int       `json:"id"`
-	CartID     int       `json:"cart_id" validate:"required"`
-	ProductID  int       `json:"product_id" validate:"required"`
-	Quantity   uint      `json:"quantity" validate:"gte=1"`
-	Weight     uint      `json:"weight" validate:"required"`
-	Price      uint      `json:"price" validate:"required"`
-	Purchashed bool      `json:"purchased"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	ID        int       `json:"id"`
+	CartID    int       `json:"-"`
+	ProductID int       `json:"-"`
+	Product   *Product  `json:"product,omitempty"`
+	Quantity  uint      `json:"quantity"`
+	Purchased bool      `json:"purchased"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type CartItemParams struct {
+	CartID    int  `json:"cart_id" validate:"required"`
+	ProductID int  `json:"product_id" validate:"required"`
+	Quantity  uint `json:"quantity" validate:"gte=1"`
 }
