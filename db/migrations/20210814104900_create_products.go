@@ -25,5 +25,5 @@ func MigrateCreateProducts(schema *rel.Schema) {
 
 // RollbackCreateProducts drop table products
 func RollbackCreateProducts(schema *rel.Schema) {
-	schema.DropTable("claims")
+	schema.DropTable("products")
 }

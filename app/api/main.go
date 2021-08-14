@@ -13,6 +13,9 @@ import (
 	"github.com/go-rel/rel/adapter/postgres"
 	"github.com/subosito/gotenv"
 	"go.uber.org/zap"
+
+	productPostgeRepository "github.com/ahsanulks/waitress/products/repository/postgres"
+	productUsecase "github.com/ahsanulks/waitress/products/usecase"
 )
 
 func main() {
@@ -27,6 +30,15 @@ func main() {
 	repo, dbConnection := initDatabase(logger)
 	defer dbConnection.Close()
 
+	// load healthz related
+	healthzHandler := handler.NewHealthz()
+	healthzHandler.AddCheck("postgresql", repo)
+
+	// load product domain related
+	productRepo := productPostgeRepository.NewProductRepository(repo)
+	productUsecase := productUsecase.NewProductUsecase(productRepo)
+	productHandler := handler.NewProductHandler(productUsecase)
+
 	r := gin.New()
 	r.Use(ginzap.Ginzap(zapLog, time.RFC3339, true))
 
@@ -34,10 +46,9 @@ func main() {
 	//   - stack means whether output the stack info.
 	r.Use(ginzap.RecoveryWithZap(zapLog, true))
 
-	// load all handler
-	healthzHandler := handler.NewHealthz()
-	healthzHandler.AddCheck("postgresql", repo)
+	// mount all endpoint from handler
 	healthzHandler.Mount(r.Group("/healthz"))
+	productHandler.Mount(r.Group("/products"))
 
 	server := http.Server{
 		Addr:    ":" + os.Getenv("PORT"),
