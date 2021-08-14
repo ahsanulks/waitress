@@ -18,7 +18,5 @@ func MigrateCreateCarts(schema *rel.Schema) {
 
 // RollbackCreateCarts drop table carts
 func RollbackCreateCarts(schema *rel.Schema) {
-	schema.Exec(rel.Raw(`DROP INDEX carts_user_id_idx`))
-
 	schema.DropTable("carts")
 }
