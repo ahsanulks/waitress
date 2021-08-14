@@ -22,7 +22,7 @@ func render(c *gin.Context, body interface{}, status int) {
 
 type MessageResponse struct {
 	Message string     `json:"message"`
-	Meta    HTTPStatus `json:"http_status"`
+	Meta    HTTPStatus `json:"meta"`
 }
 
 func buildMessageResponse(message string, status int) MessageResponse {
