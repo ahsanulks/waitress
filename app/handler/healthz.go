@@ -13,11 +13,6 @@ type Checker interface {
 	Ping(ctx context.Context) error
 }
 
-type check struct {
-	Service string
-	Status  string
-}
-
 // Healthz handler.
 type Healthz struct {
 	checkers map[string]Checker
@@ -46,6 +41,7 @@ func (h Healthz) Mount(router *gin.RouterGroup) {
 	router.GET("/", h.Index)
 }
 
+// AddCheck is to add dependencies that whant to check on healthz.
 func (h *Healthz) AddCheck(serviceName string, service Checker) {
 	h.checkers[serviceName] = service
 }
