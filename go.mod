@@ -3,7 +3,6 @@ module github.com/ahsanulks/waitress
 go 1.15
 
 require (
-	github.com/DataDog/datadog-go v4.8.1+incompatible
 	github.com/gin-contrib/zap v0.0.1
 	github.com/gin-gonic/gin v1.7.3
 	github.com/go-playground/validator/v10 v10.9.0 // indirect

@@ -21,7 +21,7 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	// load all handler and dependencies
+	// load all dependencies
 	zapLog, _ := zap.NewProduction(zap.AddCallerSkip(1))
 	logger := config.NewLog(zapLog)
 	repo, dbConnection := initDatabase(logger)
@@ -34,6 +34,7 @@ func main() {
 	//   - stack means whether output the stack info.
 	r.Use(ginzap.RecoveryWithZap(zapLog, true))
 
+	// load all handler
 	healthzHandler := handler.NewHealthz()
 	healthzHandler.AddCheck("postgresql", repo)
 	healthzHandler.Mount(r.Group("/healthz"))
