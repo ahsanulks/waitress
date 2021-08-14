@@ -1,0 +1,41 @@
+name: Go
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.15.x
+
+    - name: Build
+      run: make bin_api
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.15.x
+
+    - name: Running the test
+      run: make test
+      env:
+        POSTGRESQL_DATABASE: waitress_development
+        POSTGRESQL_USERNAME: waitress
+        POSTGRESQL_PASSWORD: waitress
+        POSTGRESQL_HOST: localhost
+        POSTGRESQL_PORT: 5432
