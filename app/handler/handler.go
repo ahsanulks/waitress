@@ -20,6 +20,7 @@ func render(c *gin.Context, body interface{}, status int) {
 	}
 }
 
+// MessageResponse to create json response for message body
 type MessageResponse struct {
 	Message string     `json:"message"`
 	Meta    HTTPStatus `json:"meta"`
@@ -44,11 +45,13 @@ func buildSuccessResponse(data interface{}, status int) SuccessResponse {
 	}
 }
 
+// SuccessResponse to create json response for body is struct or map.
 type SuccessResponse struct {
 	Data interface{} `json:"data"`
 	Meta HTTPStatus  `json:"meta"`
 }
 
+// HTTPStatus to create http_status meta response.
 type HTTPStatus struct {
 	HTTPStatus int `json:"http_status"`
 }

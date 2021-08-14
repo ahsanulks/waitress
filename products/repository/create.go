@@ -11,6 +11,7 @@ type createProduct struct {
 	db rel.Repository
 }
 
+// Create a new product.
 func (cp createProduct) Create(ctx context.Context, product *domain.Product) error {
 	return cp.db.Insert(ctx, product)
 }

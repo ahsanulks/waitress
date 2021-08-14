@@ -9,15 +9,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ProductHandler
 type ProductHandler struct {
 	productUsecase ProductUsecase
 }
 
+// ProductUsecase method that needed for product handler.
 type ProductUsecase interface {
 	Create(ctx context.Context, product *domain.Product) error
 	FindAll(ctx context.Context, limit, offset int) ([]domain.Product, error)
 }
 
+// NewProductHandler to create new product handler.
 func NewProductHandler(productUsecase ProductUsecase) *ProductHandler {
 	return &ProductHandler{productUsecase: productUsecase}
 }
@@ -57,6 +60,7 @@ func (ph ProductHandler) Index(c *gin.Context) {
 	render(c, products, http.StatusOK)
 }
 
+// Mount all endpoint to router.
 func (ph ProductHandler) Mount(router *gin.RouterGroup) {
 	router.POST("/", ph.Create)
 	router.GET("/", ph.Index)
