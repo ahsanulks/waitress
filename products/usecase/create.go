@@ -7,10 +7,10 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func (ps ProductUsecase) Create(ctx context.Context, product *domain.Product) error {
+func (pu ProductUsecase) Create(ctx context.Context, product *domain.Product) error {
 	validate := validator.New()
 	if err := validate.Struct(product); err != nil {
 		return err
 	}
-	return ps.Wraiter.Create(ctx, product)
+	return pu.productRepo.Create(ctx, product)
 }

@@ -3,31 +3,34 @@ package handler
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/ahsanulks/waitress/domain"
 	"github.com/gin-gonic/gin"
 )
 
 type ProductHandler struct {
-	productWriter ProductWriter
+	productUsecase ProductUsecase
 }
 
-type ProductWriter interface {
+type ProductUsecase interface {
 	Create(ctx context.Context, product *domain.Product) error
+	FindAll(ctx context.Context, limit, offset int) ([]domain.Product, error)
 }
 
-func NewProductHandler(productWriter ProductWriter) *ProductHandler {
-	return &ProductHandler{productWriter: productWriter}
+func NewProductHandler(productUsecase ProductUsecase) *ProductHandler {
+	return &ProductHandler{productUsecase: productUsecase}
 }
 
-func (ph ProductHandler) CreateProduct(c *gin.Context) {
+// Create handle endpoint POST /.
+func (ph ProductHandler) Create(c *gin.Context) {
 	var product domain.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
 		render(c, err, http.StatusBadRequest)
 		return
 	}
 
-	if err := ph.productWriter.Create(c, &product); err != nil {
+	if err := ph.productUsecase.Create(c, &product); err != nil {
 		render(c, err, http.StatusUnprocessableEntity)
 		return
 	}
@@ -35,6 +38,26 @@ func (ph ProductHandler) CreateProduct(c *gin.Context) {
 	render(c, product, http.StatusCreated)
 }
 
+// Show handle endpoint GET /.
+func (ph ProductHandler) Index(c *gin.Context) {
+	var (
+		limit  = 10
+		offset = 0
+	)
+
+	if limitParam, err := strconv.Atoi(c.Query("limit")); err == nil {
+		limit = limitParam
+	}
+
+	if offsetParam, err := strconv.Atoi(c.Query("offset")); err == nil {
+		offset = offsetParam
+	}
+
+	products, _ := ph.productUsecase.FindAll(c, limit, offset)
+	render(c, products, http.StatusOK)
+}
+
 func (ph ProductHandler) Mount(router *gin.RouterGroup) {
-	router.POST("/", ph.CreateProduct)
+	router.POST("/", ph.Create)
+	router.GET("/", ph.Index)
 }

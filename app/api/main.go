@@ -14,7 +14,7 @@ import (
 	"github.com/subosito/gotenv"
 	"go.uber.org/zap"
 
-	productPostgeRepository "github.com/ahsanulks/waitress/products/repository/postgres"
+	productRepository "github.com/ahsanulks/waitress/products/repository"
 	productUsecase "github.com/ahsanulks/waitress/products/usecase"
 )
 
@@ -35,7 +35,7 @@ func main() {
 	healthzHandler.AddCheck("postgresql", repo)
 
 	// load product domain related
-	productRepo := productPostgeRepository.NewProductRepository(repo)
+	productRepo := productRepository.NewProductRepository(repo)
 	productUsecase := productUsecase.NewProductUsecase(productRepo)
 	productHandler := handler.NewProductHandler(productUsecase)
 
