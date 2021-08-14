@@ -7,7 +7,7 @@ type Cart struct {
 	UserID    int        `json:"user_id" validate:"required"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
-	CartItems []CartItem `json:"items"`
+	CartItems []CartItem `json:"items,omitempty"`
 }
 
 type CartItem struct {
