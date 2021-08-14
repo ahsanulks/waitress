@@ -1,9 +1,10 @@
 package handler_test
 
 import (
+	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
 
 	"github.com/ahsanulks/waitress/app/handler"
@@ -11,37 +12,35 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewHealthz(t *testing.T) {
-	tests := []struct {
-		name string
-		want *handler.Healthz
-	}{
-		{
-			name: "should return healthz",
-			want: &handler.Healthz{},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := handler.NewHealthz(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewHealthz() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+type fakeDependency struct {
+	err error
+}
+
+func (p fakeDependency) Ping(ctx context.Context) error {
+	return p.err
 }
 
 func TestHealthz_Index(t *testing.T) {
 	tests := []struct {
-		name     string
-		status   int
-		path     string
-		response string
+		name       string
+		status     int
+		path       string
+		response   string
+		dependency handler.Checker
 	}{
 		{
-			name:     "everything is ok",
-			status:   http.StatusOK,
-			path:     "/",
-			response: `{"message":"ok"}`,
+			name:       "everything is ok",
+			status:     http.StatusOK,
+			path:       "/",
+			response:   `{"message":"ok"}`,
+			dependency: fakeDependency{},
+		},
+		{
+			name:       "have a dependencies error",
+			status:     http.StatusServiceUnavailable,
+			path:       "/",
+			response:   `{"message":"service test_dependency are down"}`,
+			dependency: fakeDependency{errors.New("error")},
 		},
 	}
 	for _, tt := range tests {
@@ -53,6 +52,7 @@ func TestHealthz_Index(t *testing.T) {
 				rr      = httptest.NewRecorder()
 			)
 
+			handler.AddCheck("test_dependency", tt.dependency)
 			handler.Mount(router.Group("/"))
 			router.ServeHTTP(rr, req)
 

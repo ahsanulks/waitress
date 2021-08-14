@@ -3,3 +3,6 @@ bin_api:
 
 run_api: bin_api
 	./waitress
+
+test:
+	ENV=test go test -race -v -cover -coverprofile=cover.out ./...
