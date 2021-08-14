@@ -34,11 +34,16 @@ func TestNewPostgresConf(t *testing.T) {
 	assert.Equal(t, "20", conf.Timeout)
 }
 
+type fakeLog struct{}
+
+func (fl fakeLog) Store(err error, message string, options map[string]interface{}) {}
+
 func TestNewPostgresConn(t *testing.T) {
 	gotenv.Load("../.env")
 	conf := config.NewPostgresConf()
+	fl := new(fakeLog)
 
-	repo, adapter := config.NewPostgresConn(conf)
+	repo, adapter := config.NewPostgresConn(conf, fl)
 	assert.Implements(t, (*rel.Repository)(nil), repo)
 	assert.IsType(t, &postgres.Adapter{}, adapter)
 }

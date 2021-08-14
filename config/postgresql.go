@@ -1,13 +1,19 @@
 package config
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/go-rel/rel"
 	"github.com/go-rel/rel/adapter/postgres"
 	_ "github.com/lib/pq"
 )
+
+type Logger interface {
+	Store(err error, message string, options map[string]interface{})
+}
 
 type PostgresConfig struct {
 	Username string
@@ -36,7 +42,7 @@ func NewPostgresConf() *PostgresConfig {
 }
 
 // NewPostgresConn initiate postgres connection.
-func NewPostgresConn(conf *PostgresConfig) (rel.Repository, *postgres.Adapter) {
+func NewPostgresConn(conf *PostgresConfig, log Logger) (rel.Repository, *postgres.Adapter) {
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable&connect_timeout=%s", conf.Username, conf.Password, conf.Host, conf.Port, conf.Database, conf.Timeout)
 	adapter, err := postgres.Open(dsn)
 	if err != nil {
@@ -45,5 +51,20 @@ func NewPostgresConn(conf *PostgresConfig) (rel.Repository, *postgres.Adapter) {
 
 	// initialize REL's repo.
 	repo := rel.New(adapter)
+	repo.Instrumentation(logInstrument(log))
 	return repo, adapter
+}
+
+func logInstrument(log Logger) rel.Instrumenter {
+	return func(ctx context.Context, op string, message string) func(err error) {
+		t := time.Now()
+		return func(err error) {
+			duration := time.Since(t)
+
+			log.Store(err, message, map[string]interface{}{
+				"tags":     []string{"postgresql-query", op},
+				"duration": duration.Milliseconds(),
+			})
+		}
+	}
 }
