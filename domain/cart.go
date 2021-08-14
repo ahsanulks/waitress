@@ -15,8 +15,8 @@ type CartItem struct {
 	CartID     int       `json:"cart_id" validate:"required"`
 	ProductID  int       `json:"product_id" validate:"required"`
 	Quantity   uint      `json:"quantity" validate:"gte=1"`
-	Weight     uint      `json:"weight"`
-	Price      uint      `json:"price"`
+	Weight     uint      `json:"weight" validate:"required"`
+	Price      uint      `json:"price" validate:"required"`
 	Purchashed bool      `json:"purchased"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
