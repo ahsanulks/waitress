@@ -32,14 +32,14 @@ func TestHealthz_Index(t *testing.T) {
 			name:       "everything is ok",
 			status:     http.StatusOK,
 			path:       "/",
-			response:   `{"message":"ok"}`,
+			response:   `{"message":"ok","meta":{"http_status":200}}`,
 			dependency: fakeDependency{},
 		},
 		{
 			name:       "have a dependencies error",
 			status:     http.StatusServiceUnavailable,
 			path:       "/",
-			response:   `{"message":"service test_dependency are down"}`,
+			response:   `{"message":"service test_dependency are down","meta":{"http_status":503}}`,
 			dependency: fakeDependency{errors.New("error")},
 		},
 	}

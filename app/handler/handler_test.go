@@ -51,7 +51,7 @@ func Test_render(t *testing.T) {
 		{
 			name:     "message",
 			data:     "this is ok",
-			response: `{"message":"this is ok"}`,
+			response: `{"message":"this is ok","meta":{"http_status":200}}`,
 		},
 		{
 			name:     "error",
@@ -68,7 +68,7 @@ func Test_render(t *testing.T) {
 			data: struct {
 				ID int `json:"id"`
 			}{ID: 123},
-			response: `{"id":123}`,
+			response: `{"data":{"id":123},"meta":{"http_status":200}}`,
 		},
 	}
 
