@@ -3,7 +3,6 @@ module github.com/ahsanulks/waitress
 go 1.15
 
 require (
-	github.com/DataDog/datadog-go v4.8.1+incompatible
 	github.com/gin-gonic/gin v1.7.3
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
 	github.com/go-rel/rel v0.18.0
@@ -16,7 +15,6 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/subosito/gotenv v1.2.0
 	github.com/ugorji/go v1.2.6 // indirect
-	go.uber.org/zap v1.19.0
 	golang.org/x/crypto v0.0.0-20210812204632-0ba0e8f03122 // indirect
 	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e // indirect
 	golang.org/x/text v0.3.7 // indirect
