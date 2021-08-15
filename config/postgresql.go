@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/go-rel/rel"
@@ -57,6 +58,11 @@ func NewPostgresConn(conf *PostgresConfig, log Logger) (rel.Repository, *postgre
 
 func logInstrument(log Logger) rel.Instrumenter {
 	return func(ctx context.Context, op string, message string) func(err error) {
+		// no output for rel functions.
+		if strings.HasPrefix(op, "rel-") {
+			return func(error) {}
+		}
+
 		t := time.Now()
 		return func(err error) {
 			duration := time.Since(t)
