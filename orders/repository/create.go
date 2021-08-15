@@ -58,7 +58,9 @@ func (or OrderRepository) Create(ctx context.Context, orderPrams domain.OrderPar
 
 		return or.db.Update(ctx, &order, rel.Set("code", orderCode))
 	})
-
+	if err != nil {
+		return domain.Order{}, err
+	}
 	return order, err
 }
 
