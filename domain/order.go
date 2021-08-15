@@ -34,20 +34,26 @@ type Order struct {
 	State      OrderState  `json:"state"`
 	TotalPrice uint        `json:"total_price"`
 	Note       string      `json:"note"`
-	Items      []OrderItem `json:"items"`
+	Items      []OrderItem `json:"items" autosave:"true"`
 	CreatedAt  time.Time   `json:"created_at"`
 	UpdatedAt  time.Time   `json:"updated_at"`
 }
 
 type OrderItem struct {
-	ID        int       `json:"id"`
-	OrderID   int       `json:"-"`
-	ProductID int       `json:"-"`
-	Product   Product   `json:"product"`
-	CartID    int       `json:"-"`
-	Quantity  uint      `json:"quantity"`
-	Price     uint      `json:"price"`
-	Weight    uint      `json:"weight"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID         int       `json:"id"`
+	OrderID    int       `json:"-"`
+	ProductID  int       `json:"-"`
+	Product    Product   `json:"product"`
+	CartItemID int       `json:"-"`
+	Quantity   uint      `json:"quantity"`
+	Price      uint      `json:"price"`
+	Weight     uint      `json:"weight"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+}
+
+type OrderParams struct {
+	CartItemIDs []int  `json:"cart_item_ids" validate:"required,gt=0"`
+	BuyerID     int    `json:"buyer_id" validate:"required"`
+	Note        string `json:"note"`
 }

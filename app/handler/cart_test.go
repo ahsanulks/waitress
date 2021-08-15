@@ -47,7 +47,7 @@ func TestCartHandler_Index(t *testing.T) {
 			name:     "error when find or create",
 			path:     "/?user_id=2",
 			response: `{"error":"something happen"}`,
-			status:   http.StatusInternalServerError,
+			status:   http.StatusUnprocessableEntity,
 		},
 		{
 			name:     "success fully create",

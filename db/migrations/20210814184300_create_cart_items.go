@@ -16,11 +16,12 @@ func MigrateCreateCartItems(schema *rel.Schema) {
 			check (
 				quantity >= 1
 			),
-			UNIQUE (cart_id, product_id),
 			CONSTRAINT fk_cart FOREIGN KEY(cart_id) REFERENCES carts(id),
 			CONSTRAINT fk_product FOREIGN KEY(product_id) REFERENCES products(id)
 		)`),
 	)
+
+	schema.Exec(rel.Raw(`CREATE INDEX cart_items_cart_id_product_id_pruchased_idx ON cart_items(purchased, cart_id, product_id)`))
 }
 
 // RollbackCreateCartItems drop table cart_items
