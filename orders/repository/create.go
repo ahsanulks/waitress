@@ -11,6 +11,7 @@ import (
 	"github.com/go-rel/rel/where"
 )
 
+// Create will create order
 func (or OrderRepository) Create(ctx context.Context, orderPrams domain.OrderParams) (domain.Order, error) {
 	var (
 		order      domain.Order

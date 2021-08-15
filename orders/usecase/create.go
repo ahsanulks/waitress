@@ -7,6 +7,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+// Create will check all need data and passing to repository to create order
 func (ou OrderUsecase) Create(ctx context.Context, orderPrams domain.OrderParams) (domain.Order, error) {
 	validate := validator.New()
 	if err := validate.Struct(orderPrams); err != nil {
