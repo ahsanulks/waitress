@@ -14,15 +14,18 @@ type CartHandler struct {
 	cartUsecase CartUsecase
 }
 
+// CartUsecase is all dependency method that needed by cart handler.
 type CartUsecase interface {
 	FindOrCreate(ctx context.Context, userID int) (domain.Cart, error)
 	AddItem(ctx context.Context, cartItemParams domain.CartItemParams) (domain.CartItem, error)
 }
 
+// NewCartHandler to create new cart handler.
 func NewCartHandler(cartUsecase CartUsecase) *CartHandler {
 	return &CartHandler{cartUsecase: cartUsecase}
 }
 
+// Index handle endpoint GET /.
 func (ch CartHandler) Index(c *gin.Context) {
 	// TODO: need to change to get userID by jwt token
 	userID, err := strconv.Atoi(c.Query("user_id"))
@@ -41,6 +44,7 @@ func (ch CartHandler) Index(c *gin.Context) {
 	render(c, cart, http.StatusOK)
 }
 
+// AddToCart handle endpoint POST /items.
 func (ch CartHandler) AddToCart(c *gin.Context) {
 	var cartItemParams domain.CartItemParams
 	if err := c.ShouldBindJSON(&cartItemParams); err != nil {
@@ -56,6 +60,7 @@ func (ch CartHandler) AddToCart(c *gin.Context) {
 	render(c, cartItem, http.StatusCreated)
 }
 
+// Mount all endpoint to router.
 func (ch CartHandler) Mount(router *gin.RouterGroup) {
 	router.GET("/", ch.Index)
 	router.POST("/items", ch.AddToCart)

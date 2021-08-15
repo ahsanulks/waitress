@@ -6,6 +6,7 @@ import (
 	"github.com/ahsanulks/waitress/domain"
 )
 
+// FindOrCreate cartby user_id.
 func (cu CartUsecase) FindOrCreate(ctx context.Context, userID int) (domain.Cart, error) {
 	cart, err := cu.cartRepository.FindByUserID(ctx, userID)
 	if err == nil {

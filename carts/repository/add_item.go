@@ -8,6 +8,7 @@ import (
 	"github.com/go-rel/rel"
 )
 
+// AddItem for add cart_item based on cart_id and product that have enough stock.
 func (cr CartRepository) AddItem(ctx context.Context, cartItem *domain.CartItem) error {
 	return cr.db.Transaction(ctx, func(ctx context.Context) error {
 		var (

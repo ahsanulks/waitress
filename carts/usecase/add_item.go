@@ -8,6 +8,7 @@ import (
 	"github.com/jinzhu/copier"
 )
 
+// AddItem insert cart item based on cart_id and product_id.
 func (cu CartUsecase) AddItem(ctx context.Context, cartItemParams domain.CartItemParams) (domain.CartItem, error) {
 	var cartItem domain.CartItem
 	validate := validator.New()
