@@ -16,6 +16,8 @@ import (
 
 	cartRepository "github.com/ahsanulks/waitress/carts/repository"
 	cartUsecase "github.com/ahsanulks/waitress/carts/usecase"
+	orderRepository "github.com/ahsanulks/waitress/orders/repository"
+	orderUsecase "github.com/ahsanulks/waitress/orders/usecase"
 	productRepository "github.com/ahsanulks/waitress/products/repository"
 	productUsecase "github.com/ahsanulks/waitress/products/usecase"
 )
@@ -46,6 +48,11 @@ func main() {
 	cartUsecase := cartUsecase.NewCartUsecase(cartRepo)
 	cartHandler := handler.NewCartHandler(cartUsecase)
 
+	// load relate order domain
+	orderRepo := orderRepository.NewOrderRepository(repo)
+	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo)
+	orderHandler := handler.NewOrderHandler(orderUsecase)
+
 	r := gin.New()
 	r.Use(ginzap.Ginzap(zapLog, time.RFC3339, true))
 
@@ -57,6 +64,7 @@ func main() {
 	healthzHandler.Mount(r.Group("/healthz"))
 	productHandler.Mount(r.Group("/products"))
 	cartHandler.Mount(r.Group("/carts"))
+	orderHandler.Mount(r.Group("/orders"))
 
 	server := http.Server{
 		Addr:    ":" + os.Getenv("PORT"),

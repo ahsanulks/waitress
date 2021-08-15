@@ -13,8 +13,9 @@ func (cr CartRepository) FindByUserID(ctx context.Context, userID int) (domain.C
 	err := cr.db.Find(ctx, &cart, rel.Eq("user_id", userID))
 	// load cart_items
 	cr.db.Preload(ctx, &cart, "cart_items", rel.Eq("purchased", false))
-	if len(cart.CartItems) > 0 {
-		cr.db.FindAll(ctx, &cart.CartItems, rel.Preload("product"))
+	cartItems := cart.CartItems
+	if len(cartItems) > 0 {
+		cr.db.FindAll(ctx, &cartItems, rel.Preload("product"))
 	}
 	return cart, err
 }

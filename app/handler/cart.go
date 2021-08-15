@@ -37,7 +37,7 @@ func (ch CartHandler) Index(c *gin.Context) {
 	// find cart based on userID, but when cart with userID is not found this will create a new cart for that userID
 	cart, err := ch.cartUsecase.FindOrCreate(c, userID)
 	if err != nil {
-		render(c, err, http.StatusInternalServerError)
+		render(c, err, http.StatusUnprocessableEntity)
 		return
 	}
 
