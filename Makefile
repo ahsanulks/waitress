@@ -6,3 +6,6 @@ run_api: bin_api
 
 test:
 	ENV=test go test -race -v -cover -coverprofile=cover.out ./...
+
+order_test:
+	go run functional_test/main.go
