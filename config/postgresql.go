@@ -58,7 +58,7 @@ func NewPostgresConn(conf *PostgresConfig, log Logger) (rel.Repository, *postgre
 
 func logInstrument(log Logger) rel.Instrumenter {
 	return func(ctx context.Context, op string, message string) func(err error) {
-		// no op for rel functions.
+		// no output for rel functions.
 		if strings.HasPrefix(op, "rel-") {
 			return func(error) {}
 		}
