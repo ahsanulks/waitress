@@ -59,6 +59,18 @@ func TestCartRepository_AddItem(t *testing.T) {
 			},
 		},
 		{
+			name:     "still have a same product that not purchased",
+			cartItem: &cartItem,
+			wantErr:  true,
+			mockFunc: func() {
+				db.ExpectTransaction(func(repo *reltest.Repository) {
+					repo.ExpectFind(rel.Eq("id", 1)).Result(cart)
+					repo.ExpectFind(rel.Eq("id", 2), rel.ForUpdate()).Result(productNotEnough)
+					repo.ExpectFind(rel.Eq("purchased", false).AndEq("cart_id", cartItem.CartID).AndEq("product_id", cartItem.ProductID)).Result(cartItem)
+				})
+			},
+		},
+		{
 			name:     "stock not enough",
 			cartItem: &cartItem,
 			wantErr:  true,
@@ -66,6 +78,7 @@ func TestCartRepository_AddItem(t *testing.T) {
 				db.ExpectTransaction(func(repo *reltest.Repository) {
 					repo.ExpectFind(rel.Eq("id", 1)).Result(cart)
 					repo.ExpectFind(rel.Eq("id", 2), rel.ForUpdate()).Result(productNotEnough)
+					repo.ExpectFind(rel.Eq("purchased", false).AndEq("cart_id", cartItem.CartID).AndEq("product_id", cartItem.ProductID)).NotFound()
 				})
 			},
 		},
@@ -77,6 +90,7 @@ func TestCartRepository_AddItem(t *testing.T) {
 				db.ExpectTransaction(func(repo *reltest.Repository) {
 					repo.ExpectFind(rel.Eq("id", 1)).Result(cart)
 					repo.ExpectFind(rel.Eq("id", 2), rel.ForUpdate()).Result(product)
+					repo.ExpectFind(rel.Eq("purchased", false).AndEq("cart_id", cartItem.CartID).AndEq("product_id", cartItem.ProductID)).NotFound()
 					repo.ExpectInsert().For(&cartItem)
 				})
 			},
