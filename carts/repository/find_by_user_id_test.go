@@ -66,7 +66,7 @@ func TestCartRepository_FindByUserID(t *testing.T) {
 			mockFunc: func() {
 				db.ExpectFind(rel.Eq("user_id", 2)).Result(cartResult)
 				db.ExpectPreload("cart_items", rel.Eq("purchased", false)).Result(cartItems)
-				db.ExpectFindAll(rel.Preload("product")).Result(cartItemWithProduct)
+				db.ExpectPreload("product").Result(product)
 			},
 		},
 	}
