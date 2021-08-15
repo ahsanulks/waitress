@@ -7,13 +7,11 @@ func MigrateCreateCarts(schema *rel.Schema) {
 	schema.Exec(rel.Raw(
 		`CREATE TABLE carts (
 			id serial primary key,
-			user_id int not null,
+			user_id int unique not null,
 			created_at timestamp not null,
 			updated_at timestamp not null
 		)`),
 	)
-
-	schema.Exec(rel.Raw(`CREATE INDEX carts_user_id_idx ON carts (user_id)`))
 }
 
 // RollbackCreateCarts drop table carts
