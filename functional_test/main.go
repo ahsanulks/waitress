@@ -115,7 +115,14 @@ func order() {
 			log.Printf("buyer %d start checkout\n", buyerID)
 			req, _ := http.NewRequest(http.MethodPost, baseURL+orderURL, jsonBody)
 			resp, _ := client.Do(req)
-			log.Printf("buyer %d got response code %d\n", buyerID, resp.StatusCode)
+			if resp.StatusCode == 201 {
+				log.Printf("buyer id %d got success make the order with response code %d\n", buyerID, resp.StatusCode)
+			} else {
+				response := make(map[string]interface{})
+				json.NewDecoder(resp.Body).Decode(&response)
+				reason := response["error"].(string)
+				log.Printf("buyer id %d fail make the order because %s with response code %d\n", buyerID, reason, resp.StatusCode)
+			}
 		}(buyerID, wg)
 	}
 }

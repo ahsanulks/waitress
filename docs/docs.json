@@ -1,0 +1,493 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Waitress API documentation",
+    "description": "Waitress is PoC of microservice that simulate process order to handle race condition on database",
+    "contact": {
+      "email": "ahsanulkh996@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "localhost:8080"
+    },
+  ],
+  "tags": [
+    {
+      "name": "products",
+      "description": "This group represent product resource",
+    },
+    {
+      "name": "carts",
+      "description": "This group represent carts resource",
+    },
+    {
+      "name": "orders",
+      "description": "This group represent orders resource",
+    },
+  ],
+  "paths": {
+    "/products": {
+      "post": {
+        "tags": [
+          "products"
+        ],
+        "summary": "Add a new product",
+        "requestBody": {
+          "description": "Product attributes that need to be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "seller_id",
+                  "price",
+                  "active",
+                  "stock",
+                  "weight"
+                ],
+                "properties": {
+                  "name": { "type": "string" },
+                  "seller_id": { "type": "number" },
+                  "price": { "type": "number" },
+                  "active": { "type": "boolean" },
+                  "stock": { "type": "number" },
+                  "weight": { "type": "number" },
+                }
+              }
+            },
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "success create",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["data", "meta"],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Product"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaStatus"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+      },
+      "get": {
+        "tags": [
+          "products"
+        ],
+        "description": "Get list all of products",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["data", "meta"],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaStatus"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/carts": {
+      "get": {
+        "tags": [
+          "carts"
+        ],
+        "description": "Get carts and cart items on current user",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["data", "meta"],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Cart"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaStatus"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/carts/items": {
+      "post": {
+        "tags": [
+          "carts"
+        ],
+        "description": "Insert cart item into user cart",
+        "requestBody": {
+          "description": "Required data that need to be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "cart_id",
+                  "product_id",
+                  "quantity"
+                ],
+                "properties": {
+                  "cart_id": { "type": "number" },
+                  "product_id": { "type": "number" },
+                  "quantity": { "type": "number" }
+                }
+              }
+            },
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "success add cart item",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["data", "meta"],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "quantity",
+                        "purchased",
+                        "created_at",
+                        "updated_at"
+                      ],
+                      "properties": {
+                        "id": { "type": "number" },
+                        "quantity": { "type": "number" },
+                        "purchased": { "type": "boolean" },
+                        "created_at": { "type": "string" },
+                        "updated_at": { "type": "string" }
+                      },
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaStatus"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "description": "Place order from cart items",
+        "requestBody": {
+          "description": "Required data that need to be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "buyer_id",
+                  "cart_items_ids"
+                ],
+                "properties": {
+                  "buyer_id": { "type": "number" },
+                  "cart_items_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  "note": { "type": "string" }
+                }
+              }
+            },
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "success create",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["data", "meta"],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Order"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaStatus"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Product": {
+        "required": [
+          "id",
+          "name",
+          "seller_id",
+          "price",
+          "active",
+          "stock",
+          "weight",
+          "created_at",
+          "updated_at"
+        ],
+        "type": "object",
+        "properties": {
+          "id": { "type": "number" },
+          "name": { "type": "string" },
+          "seller_id": { "type": "number" },
+          "price": { "type": "number" },
+          "active": { "type": "boolean" },
+          "stock": { "type": "number" },
+          "weight": { "type": "number" },
+          "created_at": { "type": "string" },
+          "updated_at": { "type": "string" }
+        },
+      },
+      "Cart": {
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": { "type": "number" },
+          "user_id": { "type": "number" },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CartItem"
+            }
+          },
+          "created_at": { "type": "string" },
+          "updated_at": { "type": "string" }
+        },
+      },
+      "CartItem": {
+        "type": "object",
+        "required": [
+          "id",
+          "product",
+          "quantity",
+          "purchased",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": { "type": "number" },
+          "quantity": { "type": "number" },
+          "product": {
+            "$ref": "#/components/schemas/Product"
+          },
+          "purchased": { "type": "boolean" },
+          "created_at": { "type": "string" },
+          "updated_at": { "type": "string" }
+        },
+      },
+      "Order": {
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "buyer_id",
+          "seller_id",
+          "state",
+          "total_price",
+          "note",
+          "items",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": { "type": "number" },
+          "code": { "type": "string" },
+          "buyer_id": { "type": "number" },
+          "seller_id": { "type": "number" },
+          "state": {
+            "type": "string",
+            "description": "Order State",
+            "enum": [
+              "pending",
+              "paid",
+              "accepted",
+              "delivered",
+              "remitted",
+              "refunded",
+              "rejected",
+              "cancelled",
+              "expired"
+            ]
+          },
+          "total_price": { "type": "number" },
+          "note": { "type": "string" },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CartItem"
+            }
+          },
+          "created_at": { "type": "string" },
+          "updated_at": { "type": "string" }
+        }
+      },
+      "ErrorResponse": {
+        "required": [
+          "error",
+          "meta"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "error message"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/MetaStatus"
+          }
+        }
+      },
+      "MetaStatus": {
+        "type": "object",
+        "required": ["http_status"],
+        "properties": {
+          "http_status": { "type": "number" }
+        }
+      }
+    }
+  }
+}
