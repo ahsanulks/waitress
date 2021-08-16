@@ -33,7 +33,7 @@ This project has a functional test to process 10 customers simultaneously to mak
 3. Add to cart for every buyer with cart id from flow number 2 with random quantity (between 1-3 quantity)
 4. Process their order simultaneously
 
-[Log process](./docs/images/log-functional-test.png)
+![Log process](./docs/images/log-functional-test.png)
 
 ## Installation
 
