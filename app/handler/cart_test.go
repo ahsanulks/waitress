@@ -40,13 +40,13 @@ func TestCartHandler_Index(t *testing.T) {
 		{
 			name:     "request without user_id",
 			path:     "/",
-			response: `{"error":"user_id must needed"}`,
+			response: `{"error":"user_id must needed","meta":{"http_status":400}}`,
 			status:   http.StatusBadRequest,
 		},
 		{
 			name:     "error when find or create",
 			path:     "/?user_id=2",
-			response: `{"error":"something happen"}`,
+			response: `{"error":"something happen","meta":{"http_status":422}}`,
 			status:   http.StatusUnprocessableEntity,
 		},
 		{
@@ -89,14 +89,14 @@ func TestCartHandler_AddToCart(t *testing.T) {
 		{
 			name:     "error when binding json",
 			path:     "/items",
-			response: `{"error":"json: cannot unmarshal string into Go value of type domain.CartItemParams"}`,
+			response: `{"error":"json: cannot unmarshal string into Go value of type domain.CartItemParams","meta":{"http_status":400}}`,
 			status:   http.StatusBadRequest,
 			payload:  `"cart_id": 1`,
 		},
 		{
 			name:     "error when adding item",
 			path:     "/items",
-			response: `{"error":"error add item"}`,
+			response: `{"error":"error add item","meta":{"http_status":422}}`,
 			status:   http.StatusUnprocessableEntity,
 			payload:  `{"cart_id": 10}`,
 		},

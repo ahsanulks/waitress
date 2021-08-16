@@ -18,13 +18,13 @@ func (cr CartRepository) AddItem(ctx context.Context, cartItem *domain.CartItem)
 		)
 		// check that cart relation is present
 		if err := cr.db.Find(ctx, &cart, rel.Eq("id", cartItem.CartID)); err != nil {
-			return err
+			return errors.New("cart not found")
 		}
 
 		// check that product relation is present
 		// lock the product
 		if err := cr.db.Find(ctx, &product, rel.Eq("id", cartItem.ProductID), rel.ForUpdate()); err != nil {
-			return err
+			return errors.New("product not found")
 		}
 
 		// check that doens't have same product id on cart item is still not purchased

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 
 	"github.com/ahsanulks/waitress/domain"
 	"github.com/go-playground/validator/v10"
@@ -13,7 +14,7 @@ func (cu CartUsecase) AddItem(ctx context.Context, cartItemParams domain.CartIte
 	var cartItem domain.CartItem
 	validate := validator.New()
 	if err := validate.Struct(cartItemParams); err != nil {
-		return cartItem, err
+		return cartItem, errors.New("parameters data not valid")
 	}
 
 	copier.Copy(&cartItem, cartItemParams)

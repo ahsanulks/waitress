@@ -46,14 +46,14 @@ func TestOrderHandler_Create(t *testing.T) {
 			name:     "error when create order",
 			path:     "/",
 			status:   http.StatusUnprocessableEntity,
-			response: `{"error":"error when create"}`,
+			response: `{"error":"error when create","meta":{"http_status":422}}`,
 			payload:  `{"buyer_id": 3, "cart_item_ids": [1,2]}`,
 		},
 		{
 			name:     "cant parse json",
 			path:     "/",
 			status:   http.StatusBadRequest,
-			response: `{"error":"json: cannot unmarshal string into Go value of type domain.OrderParams"}`,
+			response: `{"error":"json: cannot unmarshal string into Go value of type domain.OrderParams","meta":{"http_status":400}}`,
 			payload:  `"buyer_id": 2, "cart_item_ids": [1,2]`,
 		},
 	}

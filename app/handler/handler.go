@@ -6,18 +6,29 @@ import "github.com/gin-gonic/gin"
 func render(c *gin.Context, body interface{}, status int) {
 	switch v := body.(type) {
 	case string:
-		c.JSON(status, buildMessageResponse(body.(string), status))
+		c.JSON(status, buildMessageResponse(v, status))
 	case error:
-		c.JSON(status, struct {
-			Error string `json:"error"`
-		}{
-			Error: v.Error(),
-		})
+		c.JSON(status, buildErrorResponse(v, status))
 	case nil:
 		c.Status(status)
 	default:
 		c.JSON(status, buildSuccessResponse(body, status))
 	}
+}
+
+type ErrorResponse struct {
+	Error string     `json:"error"`
+	Meta  HTTPStatus `json:"meta"`
+}
+
+func buildErrorResponse(err error, status int) ErrorResponse {
+	response := ErrorResponse{
+		Error: err.Error(),
+		Meta: HTTPStatus{
+			HTTPStatus: status,
+		},
+	}
+	return response
 }
 
 // MessageResponse to create json response for message body

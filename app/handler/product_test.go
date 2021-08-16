@@ -61,14 +61,14 @@ func TestProductHandler_Create(t *testing.T) {
 		{
 			name:     "error parse json ",
 			path:     "/",
-			response: `{"error":"json: cannot unmarshal string into Go value of type domain.Product"}`,
+			response: `{"error":"json: cannot unmarshal string into Go value of type domain.Product","meta":{"http_status":400}}`,
 			status:   http.StatusBadRequest,
 			payload:  `"seller_id": 2`,
 		},
 		{
 			name:     "error when create product",
 			path:     "/",
-			response: `{"error":"can't create product"}`,
+			response: `{"error":"can't create product","meta":{"http_status":422}}`,
 			status:   http.StatusUnprocessableEntity,
 			payload:  `{"seller_id": 1}`,
 		},

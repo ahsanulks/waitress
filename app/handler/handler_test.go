@@ -56,7 +56,7 @@ func Test_render(t *testing.T) {
 		{
 			name:     "error",
 			data:     errors.New("unexpected error"),
-			response: `{"error":"unexpected error"}`,
+			response: `{"error":"unexpected error","meta":{"http_status":200}}`,
 		},
 		{
 			name:     "nil",
