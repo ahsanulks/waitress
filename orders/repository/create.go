@@ -8,6 +8,7 @@ import (
 
 	"github.com/ahsanulks/waitress/domain"
 	"github.com/go-rel/rel"
+	"github.com/go-rel/rel/sort"
 	"github.com/go-rel/rel/where"
 )
 
@@ -20,7 +21,7 @@ func (or OrderRepository) Create(ctx context.Context, orderPrams domain.OrderPar
 		totalPrice uint
 	)
 	err := or.db.Transaction(ctx, func(ctx context.Context) error {
-		or.db.FindAll(ctx, &cartItems, where.InInt("id", orderPrams.CartItemIDs), rel.ForUpdate())
+		or.db.FindAll(ctx, &cartItems, where.InInt("id", orderPrams.CartItemIDs), sort.Asc("product_id"), rel.ForUpdate())
 
 		if len(orderPrams.CartItemIDs) != len(cartItems) {
 			return errors.New("cannot found all cart item")
@@ -30,7 +31,9 @@ func (or OrderRepository) Create(ctx context.Context, orderPrams domain.OrderPar
 		for i, cartItem := range cartItems {
 			var product domain.Product
 			// lock the product for update
-			or.db.Find(ctx, &product, rel.Eq("id", cartItem.ProductID), rel.ForUpdate())
+			if err := or.db.Find(ctx, &product, rel.Eq("id", cartItem.ProductID), rel.ForUpdate()); err != nil {
+				return errors.New("product not found")
+			}
 			if cartItem.Quantity > product.Stock {
 				return errors.New("stock not enough")
 			}

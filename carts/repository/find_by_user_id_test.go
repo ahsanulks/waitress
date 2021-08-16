@@ -69,6 +69,15 @@ func TestCartRepository_FindByUserID(t *testing.T) {
 				db.ExpectPreload("product").Result(product)
 			},
 		},
+		{
+			name:    "not found the card",
+			userID:  2,
+			want:    domain.Cart{},
+			wantErr: true,
+			mockFunc: func() {
+				db.ExpectFind(rel.Eq("user_id", 2)).NotFound()
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

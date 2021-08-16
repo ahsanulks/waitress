@@ -11,6 +11,7 @@ import (
 	"github.com/ahsanulks/waitress/orders/repository"
 	"github.com/go-rel/rel"
 	"github.com/go-rel/rel/reltest"
+	"github.com/go-rel/rel/sort"
 	"github.com/go-rel/rel/where"
 	"github.com/stretchr/testify/assert"
 )
@@ -67,7 +68,21 @@ func TestOrderRepository_Create(t *testing.T) {
 			wantErr: true,
 			mockFunc: func() {
 				db.ExpectTransaction(func(repo *reltest.Repository) {
-					db.ExpectFindAll(where.InInt("id", []int{1, 2}), rel.ForUpdate()).Result(cartItems)
+					db.ExpectFindAll(where.InInt("id", []int{1, 2}), sort.Asc("product_id"), rel.ForUpdate()).Result(cartItems)
+				})
+			},
+		},
+		{
+			name: "product not found",
+			orderPrams: domain.OrderParams{
+				CartItemIDs: []int{1},
+			},
+			want:    domain.Order{},
+			wantErr: true,
+			mockFunc: func() {
+				db.ExpectTransaction(func(repo *reltest.Repository) {
+					db.ExpectFindAll(where.InInt("id", []int{1}), sort.Asc("product_id"), rel.ForUpdate()).Result(cartItems)
+					db.ExpectFind(rel.Eq("id", cartItems[0].ProductID), rel.ForUpdate()).NotFound()
 				})
 			},
 		},
@@ -80,7 +95,7 @@ func TestOrderRepository_Create(t *testing.T) {
 			wantErr: true,
 			mockFunc: func() {
 				db.ExpectTransaction(func(repo *reltest.Repository) {
-					db.ExpectFindAll(where.InInt("id", []int{1}), rel.ForUpdate()).Result(cartItems)
+					db.ExpectFindAll(where.InInt("id", []int{1}), sort.Asc("product_id"), rel.ForUpdate()).Result(cartItems)
 					db.ExpectFind(rel.Eq("id", cartItems[0].ProductID), rel.ForUpdate()).Result(productOutOfStock)
 				})
 			},
@@ -94,7 +109,7 @@ func TestOrderRepository_Create(t *testing.T) {
 			wantErr: true,
 			mockFunc: func() {
 				db.ExpectTransaction(func(repo *reltest.Repository) {
-					db.ExpectFindAll(where.InInt("id", []int{1}), rel.ForUpdate()).Result(cartItems)
+					db.ExpectFindAll(where.InInt("id", []int{1}), sort.Asc("product_id"), rel.ForUpdate()).Result(cartItems)
 					db.ExpectFind(rel.Eq("id", cartItems[0].ProductID), rel.ForUpdate()).Result(product)
 					db.ExpectUpdate().For(&cartItems[0]).Error(errors.New("error"))
 				})
@@ -109,7 +124,7 @@ func TestOrderRepository_Create(t *testing.T) {
 			wantErr: true,
 			mockFunc: func() {
 				db.ExpectTransaction(func(repo *reltest.Repository) {
-					db.ExpectFindAll(where.InInt("id", []int{1}), rel.ForUpdate()).Result(cartItems)
+					db.ExpectFindAll(where.InInt("id", []int{1}), sort.Asc("product_id"), rel.ForUpdate()).Result(cartItems)
 					db.ExpectFind(rel.Eq("id", cartItems[0].ProductID), rel.ForUpdate()).Result(product)
 					db.ExpectUpdate().For(&cartItems[0])
 					db.ExpectInsert().ForType("domain.Order").Error(errors.New("error"))
@@ -126,7 +141,7 @@ func TestOrderRepository_Create(t *testing.T) {
 			wantErr: false,
 			mockFunc: func() {
 				db.ExpectTransaction(func(repo *reltest.Repository) {
-					db.ExpectFindAll(where.InInt("id", []int{1}), rel.ForUpdate()).Result(cartItems)
+					db.ExpectFindAll(where.InInt("id", []int{1}), sort.Asc("product_id"), rel.ForUpdate()).Result(cartItems)
 					db.ExpectFind(rel.Eq("id", cartItems[0].ProductID), rel.ForUpdate()).Result(product)
 					db.ExpectUpdate().For(&cartItems[0])
 					db.ExpectInsert().ForType("domain.Order")

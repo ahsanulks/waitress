@@ -22,6 +22,7 @@ func MigrateCreateCartItems(schema *rel.Schema) {
 	)
 
 	schema.Exec(rel.Raw(`CREATE INDEX cart_items_cart_id_product_id_pruchased_idx ON cart_items(purchased, cart_id, product_id)`))
+	schema.Exec(rel.Raw(`CREATE INDEX cart_items_product_id_idx ON cart_items(product_id)`))
 }
 
 // RollbackCreateCartItems drop table cart_items
