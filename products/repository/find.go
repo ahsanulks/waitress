@@ -12,8 +12,8 @@ type findProduct struct {
 }
 
 // FindAll product with offset and limit
-func (fp findProduct) FindAll(ctx context.Context, limit, offset int) ([]domain.Product, error) {
+func (pr ProductRepository) FindAll(ctx context.Context, limit, offset int) ([]domain.Product, error) {
 	var products []domain.Product
-	err := fp.db.FindAll(ctx, &products, rel.Offset(offset), rel.Limit(limit))
+	err := pr.db.FindAll(ctx, &products, rel.Offset(offset), rel.Limit(limit))
 	return products, err
 }

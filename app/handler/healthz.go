@@ -14,12 +14,12 @@ type Checker interface {
 }
 
 // Healthz handler.
-type Healthz struct {
+type HealthzHandler struct {
 	checkers map[string]Checker
 }
 
 // Index handle endpoint GET /.
-func (h Healthz) Index(c *gin.Context) {
+func (h HealthzHandler) Index(c *gin.Context) {
 	var (
 		status  = http.StatusOK
 		message = "ok"
@@ -37,18 +37,18 @@ func (h Healthz) Index(c *gin.Context) {
 }
 
 // Mount healhtz handler to route group.
-func (h Healthz) Mount(router *gin.RouterGroup) {
+func (h HealthzHandler) Mount(router *gin.RouterGroup) {
 	router.GET("/", h.Index)
 }
 
 // AddCheck is to add dependencies that whant to check on healthz.
-func (h *Healthz) AddCheck(serviceName string, service Checker) {
+func (h *HealthzHandler) AddCheck(serviceName string, service Checker) {
 	h.checkers[serviceName] = service
 }
 
 // NewHealthz create new healthz handler.
-func NewHealthz() *Healthz {
-	return &Healthz{
+func NewHealthz() *HealthzHandler {
+	return &HealthzHandler{
 		checkers: make(map[string]Checker),
 	}
 }
