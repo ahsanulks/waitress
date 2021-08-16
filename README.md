@@ -21,9 +21,9 @@ requested help from our Customer Service department to call our customers and no
 
 ### Offered Solution
 
-1. Use database transaction with [pessimistic locking](https://stackoverflow.com/questions/129329/optimistic-vs-pessimistic-locking) on product to check product stock and update the stock to fulfil customer order. [implementation](./orders/repository/create.go#L22-L63)
+1. Use database transaction with [pessimistic locking](https://stackoverflow.com/questions/129329/optimistic-vs-pessimistic-locking) on product to check product stock and update the stock to fulfil customer order. [implementation](./orders/repository/create.go#L23-L64)
 2. Add constraint check on product stock. When stock less than zero, database will reject the update data. [implementation](./db/migrations/20210815104500_create_orders.go#L19)
-3. Add [pessimistic locking](https://stackoverflow.com/questions/129329/optimistic-vs-pessimistic-locking) on product to lock data at row level to prevent another proses update when application still have a process to update the data [implementation](./orders/repository/create.go#L36)
+3. Add [pessimistic locking](https://stackoverflow.com/questions/129329/optimistic-vs-pessimistic-locking) on product to lock data at row level to prevent another proses update when application still have a process to update the data [implementation](./orders/repository/create.go#L37)
 
 ### Proof of the Solution
 
